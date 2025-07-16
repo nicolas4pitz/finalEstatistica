@@ -9,7 +9,10 @@
 </head>
 <body id="body">
     
+
     <script>
+
+        let numerosEscolhidos = [];
 
         let cont = 0;
 
@@ -27,12 +30,20 @@
                 cont++;
                 let divPel = document.createElement("a")
                 divPel.textContent = cont
+                divPel.onclick = (e) => {
+                    numerosEscolhidos.push(e.explicitOriginalTarget.innerText)
+                    console.log(numerosEscolhidos)
+                }
                 divPel.style = "text-align: center"
                 newDiv.appendChild(divPel)
             }
             
         }
 
+
+        function guardarNumero(){
+
+        }
 
     </script>
 
