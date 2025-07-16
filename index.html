@@ -7,12 +7,14 @@
     
 
 </head>
-<body id="body">
+<body id="body" >
     
 
     <script>
 
         let numerosEscolhidos = [];
+
+        let numeroSorteado;
 
         let cont = 0;
 
@@ -41,11 +43,14 @@
         }
 
 
-        function guardarNumero(){
-
+        function sortearNumero(){
+            numeroSorteado = Math.floor(Math.random(1, 61) * 60 +1)
+            console.log(numeroSorteado)
         }
 
     </script>
+
+    <button style="margin-top: 12px;" onclick="sortearNumero()">SORTEAR</button>
 
 </body>
 </html>
