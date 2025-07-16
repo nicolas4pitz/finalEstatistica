@@ -14,7 +14,7 @@
 
         let numerosEscolhidos = [];
 
-        let numeroSorteado;
+        let numeroSorteado = [];
 
         let cont = 0;
 
@@ -44,7 +44,10 @@
 
 
         function sortearNumero(){
-            numeroSorteado = Math.floor(Math.random(1, 61) * 60 +1)
+            for (let i = 0; i < 6; i++) {
+                let sorted = Math.floor(Math.random(1, 61) * 60 +1)
+                numeroSorteado.push(sorted)
+            }
             console.log(numeroSorteado)
         }
 
