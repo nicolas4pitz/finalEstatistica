@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+
+</head>
+<body id="body">
+    
+    <script>
+
+        let cont = 0;
+
+        let divPrincipalEl = document.createElement("div")
+        divPrincipalEl.className = "principal"
+        let body = document.getElementById("body")
+        body.appendChild(divPrincipalEl)
+
+        for (let index = 0; index < 6; index++) {
+            let newDiv = document.createElement("div")
+            newDiv.style = "display: flex; justify-content: space-between; width: 550px; "
+            
+            divPrincipalEl.appendChild(newDiv)
+            for (let x = 0; x < 10; x++) {
+                cont++;
+                let divPel = document.createElement("a")
+                divPel.textContent = cont
+                divPel.style = "text-align: center"
+                newDiv.appendChild(divPel)
+            }
+            
+        }
+
+
+    </script>
+
+</body>
+</html>
