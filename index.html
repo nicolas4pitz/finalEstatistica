@@ -10,7 +10,6 @@
 </head>
 <body id="body" >
     
-
     <script>
 
         let numerosEscolhidos = [];
@@ -38,7 +37,7 @@
                 divPel.textContent = cont
                 divPel.onclick = (e) => {
                     numerosEscolhidos.push(e.explicitOriginalTarget.innerText)
-                    console.log(numerosEscolhidos)
+                    //console.log(numerosEscolhidos)
                     chossenNumbers++;
                     
                     divPel.style.backgroundColor = "#a0fba9"
@@ -55,7 +54,7 @@
                 let sorted = Math.floor(Math.random(1, 61) * 60 +1)
                 numeroSorteado.push(sorted)
             }
-            console.log(numeroSorteado)
+            //console.log(numeroSorteado)
         }
 
     </script>
