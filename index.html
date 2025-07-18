@@ -6,6 +6,7 @@
     <title>Document</title>
     
 
+
 </head>
 <body id="body" >
     
@@ -14,6 +15,8 @@
 
         let numerosEscolhidos = [];
 
+        let chossenNumbers;
+
         let numeroSorteado = [];
 
         let cont = 0;
@@ -21,20 +24,24 @@
         let divPrincipalEl = document.createElement("div")
         divPrincipalEl.className = "principal"
         let body = document.getElementById("body")
+        body.style = "width: 100%"
         body.appendChild(divPrincipalEl)
 
         for (let index = 0; index < 6; index++) {
             let newDiv = document.createElement("div")
-            newDiv.style = "display: flex; justify-content: space-between; width: 550px; "
+            newDiv.style = "display: flex; justify-content: space-between; width: 50%; "
             
             divPrincipalEl.appendChild(newDiv)
             for (let x = 0; x < 10; x++) {
                 cont++;
-                let divPel = document.createElement("a")
+                let divPel = document.createElement("div")
                 divPel.textContent = cont
                 divPel.onclick = (e) => {
                     numerosEscolhidos.push(e.explicitOriginalTarget.innerText)
                     console.log(numerosEscolhidos)
+                    chossenNumbers++;
+                    
+                    divPel.style.backgroundColor = "#a0fba9"
                 }
                 divPel.style = "text-align: center"
                 newDiv.appendChild(divPel)
@@ -56,4 +63,12 @@
     <button style="margin-top: 12px;" onclick="sortearNumero()">SORTEAR</button>
 
 </body>
+<style>
+
+    div{
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+</style>
 </html>
