@@ -14,9 +14,11 @@
 
         let numerosEscolhidos = [];
 
-        let chossenNumbers;
+        let chossenNumbers = 0;
 
         let numeroSorteado = [];
+
+        let history = []
 
         let cont = 0;
 
@@ -35,38 +37,165 @@
                 cont++;
                 let divPel = document.createElement("div")
                 divPel.textContent = cont
+                divPel.dataset.numero = cont
+                divPel.dataset.selected = "false"
+                
                 divPel.onclick = (e) => {
-                    numerosEscolhidos.push(e.explicitOriginalTarget.innerText)
-                    //console.log(numerosEscolhidos)
-                    chossenNumbers++;
+                    let numero = parseInt(e.target.dataset.numero)
+                    let isSelected = e.target.dataset.selected === "true"
                     
-                    divPel.style.backgroundColor = "#a0fba9"
+                    if(!isSelected && chossenNumbers < 6){
+                        numerosEscolhidos.push(numero)
+                        chossenNumbers++
+                        e.target.style.backgroundColor = "#a0fba9"
+                        e.target.dataset.selected = "true"
+                    } else if(isSelected){
+                        let index = numerosEscolhidos.indexOf(numero)
+                        numerosEscolhidos.splice(index, 1)
+                        chossenNumbers--
+                        e.target.style.backgroundColor = "#ffffff"
+                        e.target.dataset.selected = "false"
+                    }
+                    
+                    atualizarStatus()
                 }
-                divPel.style = "text-align: center"
+                divPel.style = "text-align: center; cursor: pointer; border: 1px solid #ccc; margin: 2px;"
                 newDiv.appendChild(divPel)
             }
             
         }
 
+        let statusDiv = document.createElement("div")
+        statusDiv.id = "status"
+        statusDiv.style = "margin-top: 10px; font-weight: bold;"
+        statusDiv.textContent = "Escolha 6 números para jogar"
+        divPrincipalEl.appendChild(statusDiv)
+
+        let resultadoDiv = document.createElement("div")
+        resultadoDiv.id = "resultado"
+        resultadoDiv.style = "margin-top: 20px; padding: 20px; border: 2px solid #ccc; border-radius: 10px; display: none;"
+        divPrincipalEl.appendChild(resultadoDiv)
+
+        function atualizarStatus(){
+            let statusEl = document.getElementById("status")
+            if(chossenNumbers < 6){
+                statusEl.textContent = `Escolha mais ${6 - chossenNumbers} número(s)`
+                statusEl.style.color = "#666"
+            } else {
+                statusEl.textContent = "6 números selecionados - Pronto para sortear!"
+                statusEl.style.color = "#00aa00"
+            }
+        }
 
         function sortearNumero(){
-            for (let i = 0; i < 6; i++) {
-                let sorted = Math.floor(Math.random(1, 61) * 60 +1)
-                numeroSorteado.push(sorted)
+            if(chossenNumbers !== 6){
+                alert("Você precisa escolher exatamente 6 números!")
+                return
             }
-            //console.log(numeroSorteado)
+
+            numeroSorteado = []
+            
+            while(numeroSorteado.length < 6){
+                let sorted = Math.floor(Math.random() * 60) + 1
+                if(!numeroSorteado.includes(sorted)){
+                    numeroSorteado.push(sorted)
+                }
+            }
+            
+            numeroSorteado.sort((a, b) => a - b)
+            
+            let acertos = numerosEscolhidos.filter(num => numeroSorteado.includes(num))
+            
+            history = numeroSorteado
+
+            mostrarResultado(acertos)
+        }
+
+        function mostrarResultado(acertos){
+            let resultadoEl = document.getElementById("resultado")
+            
+            let html = `
+                <h3>Resultado do Sorteio</h3>
+                <p><strong>Números sorteados:</strong> ${numeroSorteado.join(', ')}</p>
+                <p><strong>Seus números:</strong> ${numerosEscolhidos.sort((a,b) => a-b).join(', ')}</p>
+                <p><strong>Acertos:</strong> ${acertos.length > 0 ? acertos.sort((a,b) => a-b).join(', ') : 'Nenhum'}</p>
+                <h4 style="color: ${acertos.length >= 4 ? '#00aa00' : '#aa0000'}">
+                    ${getPremio(acertos.length)}
+                </h4>
+                <button onclick="novoJogo()" style="margin-top: 10px; padding: 8px 16px;">Novo Jogo</button>
+            `
+            
+            resultadoEl.innerHTML = html
+            resultadoEl.style.display = "block"
+        }
+
+        function getPremio(numAcertos){
+            switch(numAcertos){
+                case 6: return "Você ganhou o prêmio máximo!"
+                case 5: return "QUINA! Muito bem!"
+                case 4: return "QUADRA! Parabéns!"
+                case 3: return "3 acertos! Não foi dessa vez."
+                default: return "Tente novamente!"
+            }
+        }
+
+        function novoJogo(){
+            numerosEscolhidos = []
+            chossenNumbers = 0
+            numeroSorteado = []
+            
+            let divs = document.querySelectorAll('[data-numero]')
+            divs.forEach(div => {
+                div.style.backgroundColor = "#ffffff"
+                div.dataset.selected = "false"
+            })
+            
+            document.getElementById("resultado").style.display = "none"
+            
+            atualizarStatus()
         }
 
     </script>
 
-    <button style="margin-top: 12px;" onclick="sortearNumero()">SORTEAR</button>
+    <button id="sortearBtn" style="margin-top: 12px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;" onclick="sortearNumero()">SORTEAR</button>
 
+
+    <script>
+
+
+    </script>
 </body>
 <style>
 
     div{
         padding: 12px;
         border-radius: 8px;
+    }
+
+    .principal {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    #sortearBtn:hover {
+        background-color: #45a049;
+    }
+
+    #status {
+        text-align: center;
+        font-size: 18px;
+    }
+
+    #resultado {
+        background-color: #f9f9f9;
+        text-align: center;
+    }
+
+    #resultado h3 {
+        color: #333;
+        margin-top: 0;
     }
 
 </style>
