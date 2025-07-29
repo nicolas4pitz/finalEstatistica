@@ -20,7 +20,22 @@
 
         let history = []
 
+        let historicoJogos = []
+
         let cont = 0;
+
+        const precosPorNumeros = {
+            6: 5.00,
+            7: 35.00,
+            8: 140.00,
+            9: 420.00,
+            10: 1050.00,
+            11: 2310.00,
+            12: 4620.00,
+            13: 8580.00,
+            14: 15015.00,
+            15: 25025.00
+        };
 
         let divPrincipalEl = document.createElement("div")
         divPrincipalEl.className = "principal"
@@ -30,7 +45,7 @@
 
         for (let index = 0; index < 6; index++) {
             let newDiv = document.createElement("div")
-            newDiv.style = "display: flex; justify-content: space-between; width: 50%; "
+            newDiv.style = "display: flex; justify-content: center; width: 100%; margin: 5px 0;"
             
             divPrincipalEl.appendChild(newDiv)
             for (let x = 0; x < 10; x++) {
@@ -44,7 +59,7 @@
                     let numero = parseInt(e.target.dataset.numero)
                     let isSelected = e.target.dataset.selected === "true"
                     
-                    if(!isSelected && chossenNumbers < 6){
+                    if(!isSelected && chossenNumbers < 15){
                         numerosEscolhidos.push(numero)
                         chossenNumbers++
                         e.target.style.backgroundColor = "#a0fba9"
@@ -59,7 +74,7 @@
                     
                     atualizarStatus()
                 }
-                divPel.style = "text-align: center; cursor: pointer; border: 1px solid #ccc; margin: 2px;"
+                divPel.style = "text-align: center; cursor: pointer; border: 1px solid #ccc; margin: 2px; padding: 10px; min-width: 40px; border-radius: 5px;"
                 newDiv.appendChild(divPel)
             }
             
@@ -68,28 +83,59 @@
         let statusDiv = document.createElement("div")
         statusDiv.id = "status"
         statusDiv.style = "margin-top: 10px; font-weight: bold;"
-        statusDiv.textContent = "Escolha 6 números para jogar"
+        statusDiv.textContent = "Escolha no mínimo 6 números para jogar"
         divPrincipalEl.appendChild(statusDiv)
+
+        let sortearBtn = document.createElement("button")
+        sortearBtn.id = "sortearBtn"
+        sortearBtn.style = "margin-top: 12px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; display: block; margin-left: auto; margin-right: auto;"
+        sortearBtn.textContent = "SORTEAR"
+        sortearBtn.onclick = sortearNumero
+        divPrincipalEl.appendChild(sortearBtn)
+
+        let custoDiv = document.createElement("div")
+        custoDiv.id = "custo"
+        custoDiv.style = "margin-top: 5px; font-size: 14px; color: #555;"
+        divPrincipalEl.appendChild(custoDiv)
 
         let resultadoDiv = document.createElement("div")
         resultadoDiv.id = "resultado"
         resultadoDiv.style = "margin-top: 20px; padding: 20px; border: 2px solid #ccc; border-radius: 10px; display: none;"
         divPrincipalEl.appendChild(resultadoDiv)
 
+        let historicoDiv = document.createElement("div")
+        historicoDiv.id = "historico"
+        historicoDiv.style = "margin-top: 30px; padding: 20px; border: 2px solid #ddd; border-radius: 10px; background-color: #f9f9f9;"
+        historicoDiv.innerHTML = "<h3>Histórico de Jogos</h3><p>Nenhum jogo realizado ainda.</p>"
+        divPrincipalEl.appendChild(historicoDiv)
+
         function atualizarStatus(){
             let statusEl = document.getElementById("status")
+            let custoEl = document.getElementById("custo")
+            
             if(chossenNumbers < 6){
-                statusEl.textContent = `Escolha mais ${6 - chossenNumbers} número(s)`
+                statusEl.textContent = `Escolha mais ${6 - chossenNumbers} número(s) para completar a aposta mínima`
                 statusEl.style.color = "#666"
-            } else {
-                statusEl.textContent = "6 números selecionados - Pronto para sortear!"
+                custoEl.textContent = ""
+            } else if(chossenNumbers >= 6 && chossenNumbers <= 15) {
+                let preco = precosPorNumeros[chossenNumbers]
+                statusEl.textContent = `${chossenNumbers} números selecionados - Pronto para sortear!`
                 statusEl.style.color = "#00aa00"
+                custoEl.innerHTML = `<span style="background-color: #e8f5e8; padding: 5px 10px; border-radius: 5px; border: 1px solid #4CAF50;">💰 Custo da aposta: R$ ${preco.toFixed(2)}</span>`
+            } else {
+                statusEl.textContent = "Máximo de 15 números permitido"
+                statusEl.style.color = "#aa0000"
+                custoEl.textContent = ""
             }
         }
 
         function sortearNumero(){
-            if(chossenNumbers !== 6){
-                alert("Você precisa escolher exatamente 6 números!")
+            if(chossenNumbers < 6){
+                alert("Você precisa escolher no mínimo 6 números!")
+                return
+            }
+            if(chossenNumbers > 15){
+                alert("Máximo de 15 números permitido!")
                 return
             }
 
@@ -106,19 +152,34 @@
             
             let acertos = numerosEscolhidos.filter(num => numeroSorteado.includes(num))
             
+            let jogoAtual = {
+                data: new Date().toLocaleString('pt-BR'),
+                numerosSorteados: [...numeroSorteado],
+                numerosEscolhidos: [...numerosEscolhidos],
+                quantidadeNumeros: chossenNumbers,
+                acertos: acertos.length,
+                numerosAcertados: [...acertos],
+                custo: precosPorNumeros[chossenNumbers]
+            }
+            
+            historicoJogos.unshift(jogoAtual)
+            
             history = numeroSorteado
 
             mostrarResultado(acertos)
+            atualizarHistorico()
         }
 
         function mostrarResultado(acertos){
             let resultadoEl = document.getElementById("resultado")
+            let preco = precosPorNumeros[chossenNumbers]
             
             let html = `
                 <h3>Resultado do Sorteio</h3>
                 <p><strong>Números sorteados:</strong> ${numeroSorteado.join(', ')}</p>
-                <p><strong>Seus números:</strong> ${numerosEscolhidos.sort((a,b) => a-b).join(', ')}</p>
-                <p><strong>Acertos:</strong> ${acertos.length > 0 ? acertos.sort((a,b) => a-b).join(', ') : 'Nenhum'}</p>
+                <p><strong>Seus números (${chossenNumbers}):</strong> ${numerosEscolhidos.sort((a,b) => a-b).join(', ')}</p>
+                <p><strong>Acertos:</strong> ${acertos.length > 0 ? acertos.sort((a,b) => a-b).join(', ') : 'Nenhum'} (${acertos.length} acerto${acertos.length !== 1 ? 's' : ''})</p>
+                <p><strong>Custo da aposta:</strong> R$ ${preco.toFixed(2)}</p>
                 <h4 style="color: ${acertos.length >= 4 ? '#00aa00' : '#aa0000'}">
                     ${getPremio(acertos.length)}
                 </h4>
@@ -155,15 +216,64 @@
             atualizarStatus()
         }
 
+        function atualizarHistorico(){
+            let historicoEl = document.getElementById("historico")
+            
+            if(historicoJogos.length === 0){
+                historicoEl.innerHTML = "<h3>Histórico de Jogos</h3><p>Nenhum jogo realizado ainda.</p>"
+                return
+            }
+            
+            let html = `
+                <h3>Histórico de Jogos (${historicoJogos.length} jogo${historicoJogos.length > 1 ? 's' : ''})</h3>
+                <div style="max-height: 300px; overflow-y: auto;">
+            `
+            
+            historicoJogos.forEach((jogo, index) => {
+                let corAcertos = jogo.acertos >= 4 ? '#00aa00' : jogo.acertos >= 3 ? '#ff8800' : '#aa0000'
+                
+                html += `
+                    <div style="border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 8px; background-color: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <strong>Jogo #${historicoJogos.length - index}</strong>
+                            <small style="color: #666;">${jogo.data}</small>
+                        </div>
+                        <p style="margin: 5px 0;"><strong>Sorteados:</strong> ${jogo.numerosSorteados.join(', ')}</p>
+                        <p style="margin: 5px 0;"><strong>Seus números (${jogo.quantidadeNumeros}):</strong> ${jogo.numerosEscolhidos.sort((a,b) => a-b).join(', ')}</p>
+                        <p style="margin: 5px 0;"><strong>Acertos:</strong> 
+                            <span style="color: ${corAcertos}; font-weight: bold;">
+                                ${jogo.acertos} (${jogo.numerosAcertados.length > 0 ? jogo.numerosAcertados.sort((a,b) => a-b).join(', ') : 'Nenhum'})
+                            </span>
+                        </p>
+                        <p style="margin: 5px 0;"><strong>Custo:</strong> R$ ${jogo.custo.toFixed(2)}</p>
+                        <p style="margin: 5px 0; color: ${corAcertos}; font-weight: bold;">${getPremio(jogo.acertos)}</p>
+                    </div>
+                `
+            })
+            
+            html += `
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button onclick="limparHistorico()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        🗑️ Limpar Histórico
+                    </button>
+                </div>
+            `
+            
+            historicoEl.innerHTML = html
+        }
+
+        function limparHistorico(){
+            if(confirm("Tem certeza que deseja limpar todo o histórico?")){
+                historicoJogos = []
+                atualizarHistorico()
+            }
+        }
+
+        atualizarStatus()
+
     </script>
 
-    <button id="sortearBtn" style="margin-top: 12px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;" onclick="sortearNumero()">SORTEAR</button>
-
-
-    <script>
-
-
-    </script>
 </body>
 <style>
 
@@ -173,6 +283,9 @@
     }
 
     .principal {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         max-width: 800px;
         margin: 0 auto;
         padding: 20px;
@@ -196,6 +309,20 @@
     #resultado h3 {
         color: #333;
         margin-top: 0;
+    }
+
+    #historico {
+        text-align: left;
+    }
+
+    #historico h3 {
+        color: #333;
+        margin-top: 0;
+        text-align: center;
+    }
+
+    #historico button:hover {
+        background-color: #c82333;
     }
 
 </style>
